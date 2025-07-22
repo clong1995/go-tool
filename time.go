@@ -2,6 +2,13 @@ package tool
 
 import "time"
 
+// RangeOfDay 某时间所在日的开始时间和结束时间
+func RangeOfDay(day time.Time) (first, last time.Time) {
+	first = time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, day.Location())
+	last = time.Date(day.Year(), day.Month(), day.Day(), 23, 59, 59, 999999999, day.Location())
+	return
+}
+
 // RangeOfMonth 某时间所在月的开始时间和结束时间
 func RangeOfMonth(day time.Time) (first, last time.Time) {
 	first = time.Date(day.Year(), day.Month(), 1, 0, 0, 0, 0, day.Location())
@@ -13,7 +20,7 @@ func RangeOfMonth(day time.Time) (first, last time.Time) {
 		23,
 		59,
 		59,
-		int(time.Second-time.Nanosecond),
+		999999999,
 		day.Location(),
 	)
 	return
