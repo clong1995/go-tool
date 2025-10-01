@@ -9,6 +9,20 @@ func RangeOfDay(day time.Time) (first, last time.Time) {
 	return
 }
 
+// RangeOfWeek 某时间所在周的开始时间和结束时间
+func RangeOfWeek(day time.Time) (first, last time.Time) {
+	// 计算到周一的偏移量
+	offset := int(time.Monday - day.Weekday())
+	if offset > 0 {
+		offset = -6 // 如果是周日，需要向前推6天
+	}
+
+	first = day.AddDate(0, 0, offset).Truncate(24 * time.Hour)
+	last = first.AddDate(0, 0, 6).Add(24*time.Hour - time.Nanosecond)
+
+	return first, last
+}
+
 // RangeOfMonth 某时间所在月的开始时间和结束时间
 func RangeOfMonth(day time.Time) (first, last time.Time) {
 	first = time.Date(day.Year(), day.Month(), 1, 0, 0, 0, 0, day.Location())
@@ -63,4 +77,28 @@ func WeeksOfMonth(day time.Time) (first, last time.Time) {
 	}
 
 	return
+}
+
+// FirstDayOfRange 提取出所有月的第一天
+func FirstDayOfRange(startStr, endStr string) ([]string, error) {
+	// 解析时间字符串
+	start, err := time.ParseInLocation(time.DateTime, startStr, time.Local)
+	if err != nil {
+		return nil, err
+	}
+	end, err := time.ParseInLocation(time.DateTime, endStr, time.Local)
+	if err != nil {
+		return nil, err
+	}
+
+	// 设置到每月1号，方便计算
+	current := time.Date(start.Year(), start.Month(), 1, 0, 0, 0, 0, start.Location())
+	last := time.Date(end.Year(), end.Month(), 1, 0, 0, 0, 0, end.Location())
+
+	var result []string
+	for !current.After(last) {
+		result = append(result, current.Format("2006-01"))
+		current = current.AddDate(0, 1, 0) // 下一个月
+	}
+	return result, nil
 }
